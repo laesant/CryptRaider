@@ -46,7 +46,7 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 		Sphere);
 	if(HasHit)
 	{
-		UE_LOG(LogTemp, Display, TEXT("Hit Actor %s"), *HitResult.GetActor()->GetName());
+		UE_LOG(LogTemp, Display, TEXT("Hit Actor %s"), *HitResult.GetActor()->GetActorNameOrLabel());
 	}
 }
 
