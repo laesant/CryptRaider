@@ -31,6 +31,15 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+}
+
+void UGrabber::Release()
+{
+	UE_LOG(LogTemp, Display, TEXT("Released grabber"));
+}
+
+void UGrabber::Grab()
+{
 	FVector Start = GetComponentLocation();
 	FVector End = Start + GetForwardVector() * MaxGrabDistance;
 	DrawDebugLine(GetWorld(), Start, End, FColor::Red);
@@ -39,12 +48,12 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 	FHitResult HitResult;
 	bool HasHit = GetWorld()->SweepSingleByChannel(
 		HitResult,
-		Start, 
+		Start,
 		End,
 		FQuat::Identity,
 		ECC_GameTraceChannel2,
 		Sphere);
-	if(HasHit)
+	if (HasHit)
 	{
 		UE_LOG(LogTemp, Display, TEXT("Hit Actor %s"), *HitResult.GetActor()->GetActorNameOrLabel());
 	}
