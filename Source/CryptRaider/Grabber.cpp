@@ -22,12 +22,6 @@ void UGrabber::BeginPlay()
 {
 	Super::BeginPlay();
 
-	UPhysicsHandleComponent* PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
-	
-	if (PhysicsHandle)
-	{
-		UE_LOG(LogTemp, Display, TEXT("Component Name is %s"), *PhysicsHandle->GetName());
-	}
 }
 
 
@@ -35,6 +29,12 @@ void UGrabber::BeginPlay()
 void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	if (UPhysicsHandleComponent* PhysicsHandle = GetPhysicsHandle())
+	{
+		FVector TargetLocation = GetComponentLocation() + GetForwardVector() * HoldDistance;
+		PhysicsHandle->SetTargetLocationAndRotation(TargetLocation, GetComponentRotation());
+	}
 
 }
 
@@ -45,25 +45,43 @@ void UGrabber::Release()
 
 void UGrabber::Grab()
 {
-	FVector Start = GetComponentLocation();
-	FVector End = Start + GetForwardVector() * MaxGrabDistance;
-	DrawDebugLine(GetWorld(), Start, End, FColor::Red);
-	// DrawDebugSphere(GetWorld(), End, 10, 10, FColor::Blue, false, 5.f);
-
-	FCollisionShape Sphere = FCollisionShape::MakeSphere(GrabRadius);
-	FHitResult HitResult;
-	bool HasHit = GetWorld()->SweepSingleByChannel(
-		HitResult,
-		Start,
-		End,
-		FQuat::Identity,
-		ECC_GameTraceChannel2,
-		Sphere);
-	if (HasHit)
+	if (UPhysicsHandleComponent* PhysicsHandle = GetPhysicsHandle())
 	{
-		DrawDebugSphere(GetWorld(), HitResult.Location, 10, 10, FColor::Yellow, false, 5.f);
-		DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 10, 10, FColor::Red, false, 5.f);
-		UE_LOG(LogTemp, Display, TEXT("Hit Actor %s"), *HitResult.GetActor()->GetActorNameOrLabel());
+		FVector Start = GetComponentLocation();
+		FVector End = Start + GetForwardVector() * MaxGrabDistance;
+		DrawDebugLine(GetWorld(), Start, End, FColor::Red);
+		// DrawDebugSphere(GetWorld(), End, 10, 10, FColor::Blue, false, 5.f);
+
+		FCollisionShape Sphere = FCollisionShape::MakeSphere(GrabRadius);
+		FHitResult HitResult;
+		bool HasHit = GetWorld()->SweepSingleByChannel(
+			HitResult,
+			Start,
+			End,
+			FQuat::Identity,
+			ECC_GameTraceChannel2,
+			Sphere);
+		if (HasHit)
+		{
+			PhysicsHandle->GrabComponentAtLocationWithRotation(
+				HitResult.GetComponent(),
+				NAME_None,
+				HitResult.ImpactPoint,
+				GetComponentRotation());
+		}
+	}
+}
+
+UPhysicsHandleComponent* UGrabber::GetPhysicsHandle() const
+{
+	if (UPhysicsHandleComponent* PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>())
+	{
+		return PhysicsHandle;
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("Don't Have a UPhysicsHandleComponent"));
+		return nullptr;
 	}
 }
 
