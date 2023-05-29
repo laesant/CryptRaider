@@ -32,15 +32,25 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 
 	if (UPhysicsHandleComponent* PhysicsHandle = GetPhysicsHandle())
 	{
-		FVector TargetLocation = GetComponentLocation() + GetForwardVector() * HoldDistance;
-		PhysicsHandle->SetTargetLocationAndRotation(TargetLocation, GetComponentRotation());
+		if (PhysicsHandle->GetGrabbedComponent())
+		{
+			FVector TargetLocation = GetComponentLocation() + GetForwardVector() * HoldDistance;
+			PhysicsHandle->SetTargetLocationAndRotation(TargetLocation, GetComponentRotation());
+		}
 	}
 
 }
 
 void UGrabber::Release()
 {
-	UE_LOG(LogTemp, Display, TEXT("Released grabber"));
+	if (UPhysicsHandleComponent* PhysicsHandle = GetPhysicsHandle())
+	{
+		if (UPrimitiveComponent* GrabbedComponent = PhysicsHandle->GetGrabbedComponent())
+		{
+			GrabbedComponent->WakeAllRigidBodies();
+			PhysicsHandle->ReleaseComponent();
+		}
+	}
 }
 
 void UGrabber::Grab()
@@ -63,8 +73,10 @@ void UGrabber::Grab()
 			Sphere);
 		if (HasHit)
 		{
+			UPrimitiveComponent* HitComponent = HitResult.GetComponent();
+			HitComponent->WakeAllRigidBodies(); // acorda o componente para que ele simule fisica!
 			PhysicsHandle->GrabComponentAtLocationWithRotation(
-				HitResult.GetComponent(),
+				HitComponent,
 				NAME_None,
 				HitResult.ImpactPoint,
 				GetComponentRotation());
