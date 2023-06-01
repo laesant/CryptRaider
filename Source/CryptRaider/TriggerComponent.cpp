@@ -31,6 +31,9 @@ void UTriggerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 
 	for(AActor* Actor : Actors)
 	{
-		UE_LOG(LogTemp, Display, TEXT("%s"), *Actor->GetActorNameOrLabel());
+		if (Actor->ActorHasTag(AcceptableActorTag))
+		{
+			UE_LOG(LogTemp, Display, TEXT("Unlocking"), );
+		}
 	}
 }
