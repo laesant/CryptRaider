@@ -29,8 +29,8 @@ void UTriggerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 		++index;
 	}*/
 
-	for (int32 i = 0; i < Actors.Num(); i++)
+	for(AActor* Actor : Actors)
 	{
-		UE_LOG(LogTemp, Display, TEXT("%s"), *Actors[i]->GetActorNameOrLabel());
+		UE_LOG(LogTemp, Display, TEXT("%s"), *Actor->GetActorNameOrLabel());
 	}
 }
