@@ -38,7 +38,6 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 			PhysicsHandle->SetTargetLocationAndRotation(TargetLocation, GetComponentRotation());
 		}
 	}
-
 }
 
 void UGrabber::Release()
