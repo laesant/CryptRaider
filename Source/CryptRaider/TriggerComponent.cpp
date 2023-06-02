@@ -20,20 +20,26 @@ void UTriggerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	if (AActor* Actor = GetAcceptableActor())
+	{
+		UE_LOG(LogTemp, Display, TEXT("Unlocking"))
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Locking"))
+	}
+}
+
+AActor* UTriggerComponent::GetAcceptableActor() const
+{
 	TArray<AActor*> Actors;
 	GetOverlappingActors(Actors);
-
-	/*int32 index = 0;
-	while (index < Actors.Num())
-	{
-		++index;
-	}*/
-
-	for(AActor* Actor : Actors)
+	for (AActor* Actor : Actors)
 	{
 		if (Actor->ActorHasTag(AcceptableActorTag))
 		{
-			UE_LOG(LogTemp, Display, TEXT("Unlocking"), );
+			return Actor;
 		}
 	}
+	return nullptr;
 }
