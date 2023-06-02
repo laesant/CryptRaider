@@ -25,7 +25,6 @@ void UTriggerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 	{
 		if (UPrimitiveComponent* Component = Cast<UPrimitiveComponent>(Actor->GetRootComponent()))
 		{
-			UE_LOG(LogTemp, Error, TEXT("%s"), *Component->GetName());
 			Component->SetSimulatePhysics(false);
 		}
 		Actor->AttachToComponent(this, FAttachmentTransformRules::KeepWorldTransform);
